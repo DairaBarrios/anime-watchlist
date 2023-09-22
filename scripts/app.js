@@ -48,24 +48,70 @@ Vue.component('anime-watchlist', {
 	template: `
     <div>
       <h2>Anime Watchlist</h2>
-      <ul>
-        <li v-for="anime in watchlist" :key="anime.id">
-          {{ anime.title }} ({{ anime.status }})
+      <ul v-if="watchlist.length > 0">
+        <li v-for="anime in watchlist" :key="anime.name">
+          {{ anime.name }} ({{ anime.watched ? 'Visto' : 'No visto' }}) - Recomendado: {{ anime.recomend ? 'Sí' : 'No' }}
+          <button @click="toggleRecommend(anime)">Recomendar</button>
+          <button @click="toggleWatched(anime)">Marcar como {{ anime.watched ? 'No visto' : 'Visto' }}</button>
+          <button @click="startWritingReview(anime)">
+            {{ anime.review ? 'Modificar Review' : 'Escribir Review' }}
+          </button>
+          <button @click="removeFromWatchlist(anime)">Eliminar</button>
+          <div v-if="anime.writingReview">
+            <textarea v-model="anime.review" rows="4" cols="50"></textarea>
+            <button @click="saveReview(anime)">Guardar Review</button>
+          </div>
+          <p v-else-if="anime.review">Review: {{ anime.review }}</p>
         </li>
       </ul>
+      <p v-else>No hay animes pendientes en la watchlist.</p>
     </div>
   `,
 	data() {
 		return {
-			watchlist: [
-				{ id: 1, title: 'Naruto', status: 'Not watched' },
-				{ id: 2, title: 'Attack on Titan', status: 'Watched' },
-				{ id: 3, title: 'One Piece', status: 'Not watched' },
-				// ... más animes
-			],
+			watchlist: [],
 		};
 	},
+	mounted() {
+		this.loadWatchlist();
+	},
+	methods: {
+		loadWatchlist() {
+			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
+			this.watchlist = savedAnimes;
+		},
+		saveWatchlist() {
+			localStorage.setItem('savedAnimes', JSON.stringify(this.watchlist));
+		},
+		toggleRecommend(anime) {
+			anime.recomend = !anime.recomend;
+			this.saveWatchlist();
+		},
+		toggleWatched(anime) {
+			anime.watched = !anime.watched;
+			this.saveWatchlist();
+		},
+		startWritingReview(anime) {
+			anime.writingReview = true;
+		},
+		saveReview(anime) {
+			anime.writingReview = false;
+			this.saveWatchlist();
+		},
+		removeFromWatchlist(anime) {
+			const index = this.watchlist.indexOf(anime);
+			if (index !== -1) {
+				this.watchlist.splice(index, 1);
+				this.saveWatchlist();
+			}
+		},
+	},
 });
+
+
+
+
+
 
 // AnimeTest Component
 Vue.component('anime-test', {
@@ -138,24 +184,40 @@ Vue.component('anime-test', {
 			this.step++;
 		},
 		saveRecommendation() {
-			const animeName = recommendations[this.selectedGenre][this.selectedPlatform][this.selectedType];
+			const animeName = this.recommendation
 
 			// Obtener el array actual de localStorage o crear uno vacío
 			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
+			console.log(savedAnimes)
 
-			// Verificar si el anime ya está en el array
-			const animeExists = savedAnimes.includes(animeName);
+			console.log(savedAnimes)
+
+			var animeExists = false;
+
+			for (var savedAnime of savedAnimes) {
+				console.log(savedAnime.name, animeName )
+				if (savedAnime.name == animeName) {
+					animeExists = true;
+					break;
+				}
+			}
 
 			if (!animeExists) {
 				// Agregar el anime al array
-				savedAnimes.push(animeName);
+
+				var animeToSave = {
+					"name": animeName,
+					"watched": false,
+					"recomend": null,
+					"review": null
+				}
+
+				savedAnimes.push(animeToSave);
 
 				// Guardar el array actualizado en localStorage
 				localStorage.setItem('savedAnimes', JSON.stringify(savedAnimes));
-				alert(`Anime "${animeName}" guardado en la lista.`);
-			} else {
-				alert(`El anime "${animeName}" ya está en la lista.`);
 			}
+			this.$emit('recommendation-saved');
 		},
 	},
 });
@@ -163,17 +225,22 @@ Vue.component('anime-test', {
 // App Component
 const App = {
 	template: `
-    <div>
-      <button @click="currentComponent = 'anime-watchlist'">Anime Watchlist</button>
-      <button @click="currentComponent = 'anime-test'">Anime Test</button>
-      <component :is="currentComponent" />
-    </div>
-  `,
+        <div>
+            <button @click="currentComponent = 'anime-watchlist'">Anime Watchlist</button>
+            <button @click="currentComponent = 'anime-test'">Anime Test</button>
+            <component :is="currentComponent" @recommendation-saved="switchToWatchlist" />
+        </div>
+    `,
 	data() {
 		return {
 			currentComponent: null,
 		};
 	},
+	methods: {
+		switchToWatchlist() {
+			this.currentComponent = "anime-watchlist";
+		}
+	}
 };
 
 new Vue({
