@@ -92,7 +92,6 @@ const recommendations = {
 
 Vue.prototype.$recommendations = recommendations;
 
-// AnimeWatchlist Component
 Vue.component('anime-watchlist', {
 	template: `
     <div>
@@ -143,7 +142,6 @@ Vue.component('anime-watchlist', {
 		toggleWatched(anime) {
 			anime.watched = !anime.watched;
 
-			// If the anime is marked as not watched, set recommendation status to null
 			if (!anime.watched) {
 				anime.recomend = null;
 				anime.review = null;
@@ -170,7 +168,6 @@ Vue.component('anime-watchlist', {
 	},
 });
 
-// AnimeTest Component
 Vue.component('anime-test', {
 	template: `
     <div>
@@ -237,14 +234,12 @@ Vue.component('anime-test', {
 			this.nextStep();
 		},
 		showRecommendation() {
-			// Dummy recommendations based on user input
 			this.recommendation = this.$recommendations[this.selectedGenre.toLowerCase()][this.selectedPlatform.toLowerCase()][this.selectedType.toLowerCase()];
 			this.step++;
 		},
 		saveRecommendation() {
 			const animeName = this.recommendation.name;
 
-			// Obtener el array actual de localStorage o crear uno vacío
 			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
 			console.log(savedAnimes);
 
@@ -259,8 +254,6 @@ Vue.component('anime-test', {
 			}
 
 			if (!animeExists) {
-				// Agregar el anime al array
-
 				var animeToSave = {
 					"name": animeName,
 					"watched": false,
@@ -270,8 +263,6 @@ Vue.component('anime-test', {
 				};
 
 				savedAnimes.push(animeToSave);
-
-				// Guardar el array actualizado en localStorage
 				localStorage.setItem('savedAnimes', JSON.stringify(savedAnimes));
 			}
 			this.$emit('recommendation-saved');
