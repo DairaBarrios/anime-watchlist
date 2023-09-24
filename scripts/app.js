@@ -1,45 +1,94 @@
 const recommendations = {
 	action: {
 		netflix: {
-			classic: 'Fullmetal Alchemist: Brotherhood',
-			new: 'Attack on Titan',
+			classic: {
+				name: 'Fullmetal Alchemist: Brotherhood',
+				img: 'https://example.com/images/fullmetal_alchemist_brotherhood.jpg'
+			},
+			new: {
+				name: 'Attack on Titan',
+				img: 'https://example.com/images/attack_on_titan.jpg'
+			}
 		},
 		crunchyroll: {
-			classic: 'Naruto',
-			new: 'Demon Slayer: Kimetsu no Yaiba',
-		},
+			classic: {
+				name: 'Naruto',
+				img: 'https://cdn.myanimelist.net/images/anime/1565/111305.jpg'
+			},
+			new: {
+				name: 'Demon Slayer: Kimetsu no Yaiba',
+				img: 'https://example.com/images/demon_slayer.jpg'
+			}
+		}
 	},
 	mystery: {
 		netflix: {
-			classic: 'Death Note',
-			new: 'The Promised Neverland',
+			classic: {
+				name: 'Death Note',
+				img: 'https://example.com/images/death_note.jpg'
+			},
+			new: {
+				name: 'The Promised Neverland',
+				img: 'https://example.com/images/the_promised_neverland.jpg'
+			}
 		},
 		crunchyroll: {
-			classic: 'Hyouka',
-			new: 'Erased',
-		},
+			classic: {
+				name: 'Hyouka',
+				img: 'https://example.com/images/hyouka.jpg'
+			},
+			new: {
+				name: 'Erased',
+				img: 'https://example.com/images/erased.jpg'
+			}
+		}
 	},
 	adventure: {
 		netflix: {
-			classic: 'One Piece',
-			new: 'Hunter x Hunter',
+			classic: {
+				name: 'One Piece',
+				img: 'https://example.com/images/one_piece.jpg'
+			},
+			new: {
+				name: 'Hunter x Hunter',
+				img: 'https://example.com/images/hunter_x_hunter.jpg'
+			}
 		},
 		crunchyroll: {
-			classic: 'Dragon Ball Z',
-			new: 'My Hero Academia',
-		},
+			classic: {
+				name: 'Dragon Ball Z',
+				img: 'https://example.com/images/dragon_ball_z.jpg'
+			},
+			new: {
+				name: 'My Hero Academia',
+				img: 'https://example.com/images/my_hero_academia.jpg'
+			}
+		}
 	},
 	comedy: {
 		netflix: {
-			classic: 'Great Teacher Onizuka',
-			new: 'One Punch Man',
+			classic: {
+				name: 'Great Teacher Onizuka',
+				img: 'https://example.com/images/great_teacher_onizuka.jpg'
+			},
+			new: {
+				name: 'One Punch Man',
+				img: 'https://example.com/images/one_punch_man.jpg'
+			}
 		},
 		crunchyroll: {
-			classic: 'Nichijou',
-			new: 'Kaguya-sama: Love is War',
-		},
-	},
+			classic: {
+				name: 'Nichijou',
+				img: 'https://example.com/images/nichijou.jpg'
+			},
+			new: {
+				name: 'Kaguya-sama: Love is War',
+				img: 'https://example.com/images/kaguya_sama.jpg'
+			}
+		}
+	}
 };
+
 
 Vue.prototype.$recommendations = recommendations;
 
@@ -50,18 +99,22 @@ Vue.component('anime-watchlist', {
       <h2>Anime Watchlist</h2>
       <ul v-if="watchlist.length > 0">
         <li v-for="anime in watchlist" :key="anime.name">
-          {{ anime.name }} ({{ anime.watched ? 'Visto' : 'No visto' }}) - Recomendado: {{ anime.recomend ? 'Sí' : 'No' }}
-          <button @click="toggleRecommend(anime)">Recomendar</button>
-          <button @click="toggleWatched(anime)">Marcar como {{ anime.watched ? 'No visto' : 'Visto' }}</button>
-          <button @click="startWritingReview(anime)">
-            {{ anime.review ? 'Modificar Review' : 'Escribir Review' }}
-          </button>
-          <button @click="removeFromWatchlist(anime)">Eliminar</button>
-          <div v-if="anime.writingReview">
-            <textarea v-model="anime.review" rows="4" cols="50"></textarea>
-            <button @click="saveReview(anime)">Guardar Review</button>
+          <div>
+            <img :src="getAnimeImage(anime)" alt="Anime Image" style="max-width: 100px;" />
+            {{ anime.name }} ({{ anime.watched ? 'Visto' : 'No visto' }}) - 
+            <span v-if="anime.recomend !== null">Recomendado: {{ anime.recomend ? 'Sí' : 'No' }}</span>
+            <button v-if="anime.watched" @click="toggleRecommend(anime)">Recomendar</button>
+            <button @click="toggleWatched(anime)">Marcar como {{ anime.watched ? 'No visto' : 'Visto' }}</button>
+            <button v-if="anime.watched" @click="startWritingReview(anime)">
+              {{ anime.review ? 'Modificar Review' : 'Escribir Review' }}
+            </button>
+            <button @click="removeFromWatchlist(anime)">Eliminar</button>
+            <div v-if="anime.writingReview">
+              <textarea v-model="anime.review" rows="4" cols="50"></textarea>
+              <button @click="saveReview(anime)">Guardar Review</button>
+            </div>
+            <p v-else-if="anime.review">Review: {{ anime.review }}</p>
           </div>
-          <p v-else-if="anime.review">Review: {{ anime.review }}</p>
         </li>
       </ul>
       <p v-else>No hay animes pendientes en la watchlist.</p>
@@ -89,6 +142,12 @@ Vue.component('anime-watchlist', {
 		},
 		toggleWatched(anime) {
 			anime.watched = !anime.watched;
+
+			// If the anime is marked as not watched, set recommendation status to null
+			if (!anime.watched) {
+				anime.recomend = null;
+				anime.review = null;
+			}
 			this.saveWatchlist();
 		},
 		startWritingReview(anime) {
@@ -105,13 +164,11 @@ Vue.component('anime-watchlist', {
 				this.saveWatchlist();
 			}
 		},
+		getAnimeImage(anime) {
+			return anime.img
+		}
 	},
 });
-
-
-
-
-
 
 // AnimeTest Component
 Vue.component('anime-test', {
@@ -125,29 +182,15 @@ Vue.component('anime-test', {
       </div>
       <div v-else-if="step === 1">
         <label>Select a genre:</label>
-        <select v-model="selectedGenre">
-          <option value="action">Action</option>
-          <option value="mystery">Mystery</option>
-          <option value="adventure">Adventure</option>
-          <option value="comedy">Comedy</option>
-        </select>
-        <button @click="nextStep">Next</button>
+        <button v-for="genre in genres" :key="genre" @click="selectGenre(genre)">{{ genre }}</button>
       </div>
       <div v-else-if="step === 2">
         <label>Select a streaming platform:</label>
-        <select v-model="selectedPlatform">
-          <option value="netflix">Netflix</option>
-          <option value="crunchyroll">Crunchyroll</option>
-        </select>
-        <button @click="nextStep">Next</button>
+        <button v-for="platform in platforms" :key="platform" @click="selectPlatform(platform)">{{ platform }}</button>
       </div>
       <div v-else-if="step === 3">
         <label>Is it a classic or new anime?</label>
-        <select v-model="selectedType">
-          <option value="classic">Classic</option>
-          <option value="new">New</option>
-        </select>
-        <button @click="nextStep">Next</button>
+        <button v-for="type in types" :key="type" @click="selectType(type)">{{ type }}</button>
       </div>
       <div v-else-if="step === 4">
         <h3>Confirmation:</h3>
@@ -159,7 +202,7 @@ Vue.component('anime-test', {
       </div>
       <div v-else-if="step === 5">
         <h3>Recommendation:</h3>
-        <p>Hola {{ username }}! Te recomiendo {{ recommendation }}</p>
+        <p>Hola {{ username }}! Te recomiendo {{ recommendation.name }}</p>
         <button @click="saveRecommendation">Save Recommendation</button>
       </div>
     </div>
@@ -168,8 +211,11 @@ Vue.component('anime-test', {
 		return {
 			step: 0,
 			username: '',
+			genres: ['Action', 'Mystery', 'Adventure', 'Comedy'],
 			selectedGenre: '',
+			platforms: ['Netflix', 'Crunchyroll'],
 			selectedPlatform: '',
+			types: ['Classic', 'New'],
 			selectedType: '',
 			recommendation: '',
 		};
@@ -178,24 +224,34 @@ Vue.component('anime-test', {
 		nextStep() {
 			this.step++;
 		},
+		selectGenre(genre) {
+			this.selectedGenre = genre;
+			this.nextStep();
+		},
+		selectPlatform(platform) {
+			this.selectedPlatform = platform;
+			this.nextStep();
+		},
+		selectType(type) {
+			this.selectedType = type;
+			this.nextStep();
+		},
 		showRecommendation() {
 			// Dummy recommendations based on user input
-			this.recommendation = this.$recommendations[this.selectedGenre][this.selectedPlatform][this.selectedType];
+			this.recommendation = this.$recommendations[this.selectedGenre.toLowerCase()][this.selectedPlatform.toLowerCase()][this.selectedType.toLowerCase()];
 			this.step++;
 		},
 		saveRecommendation() {
-			const animeName = this.recommendation
+			const animeName = this.recommendation.name;
 
 			// Obtener el array actual de localStorage o crear uno vacío
 			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
-			console.log(savedAnimes)
-
-			console.log(savedAnimes)
+			console.log(savedAnimes);
 
 			var animeExists = false;
 
 			for (var savedAnime of savedAnimes) {
-				console.log(savedAnime.name, animeName )
+				console.log(savedAnime.name, animeName);
 				if (savedAnime.name == animeName) {
 					animeExists = true;
 					break;
@@ -209,8 +265,9 @@ Vue.component('anime-test', {
 					"name": animeName,
 					"watched": false,
 					"recomend": null,
-					"review": null
-				}
+					"review": null,
+					"img": this.recommendation.img
+				};
 
 				savedAnimes.push(animeToSave);
 
@@ -221,6 +278,7 @@ Vue.component('anime-test', {
 		},
 	},
 });
+
 
 // App Component
 const App = {
