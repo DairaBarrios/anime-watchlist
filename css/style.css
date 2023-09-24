@@ -1,0 +1,143 @@
+/* Estilos generales */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Estilos para los botones */
+
+.btn {
+    margin: 10px;
+    border-radius: 10%;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+/* Estilos para los elementos de formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Estilos para las etiquetas de formulario */
+label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para los elementos de lista */
+.list-group {
+    border: none;
+    background-color: #fff;
+}
+
+.list-group-item {
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.list-group-item img {
+    max-width: 100px;
+}
+
+/* Estilos para los textareas */
+.review-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Estilos para la navegación */
+.navbar {
+    background-color: #343a40;
+    padding: 15px 0;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #fff;
+    font-weight: bold;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #007bff;
+}
+
+/* Estilos para el encabezado h2 */
+h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Estilos para los botones de confirmación y guardado */
+.confirm-button,
+.save-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.confirm-button {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.confirm-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.save-button {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+}
+
+.save-button:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
