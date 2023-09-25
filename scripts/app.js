@@ -135,15 +135,6 @@ Vue.component('anime-watchlist', {
 	mounted() {
 		this.loadWatchlist();
 	},
-	created() {
-		// Carga la lista cuando se crea el componente
-		this.loadWatchlist();
-
-		// Escucha el evento del bus de eventos y carga la lista cuando se emite
-		eventBus.$on('recommendation-saved', () => {
-			this.loadWatchlist();
-		});
-	},
 	methods: {
 		loadWatchlist() {
 			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
@@ -296,7 +287,8 @@ Vue.component('anime-test', {
 					"watched": false,
 					"recomend": null,
 					"review": null,
-					"img": this.recommendation.img
+					"img": this.recommendation.img,
+					"createdAt": Date.now()
 				};
 
 				savedAnimes.push(animeToSave);
