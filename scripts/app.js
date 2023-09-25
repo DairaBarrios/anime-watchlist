@@ -103,7 +103,7 @@ Vue.component('anime-watchlist', {
                         <img :src="getAnimeImage(anime)" alt="Anime Image" class="img-fluid" />
                     </div>
                     <div class="col-md-9">
-                        {{ anime.name }} ({{ anime.watched ? 'Visto' : 'No visto' }})
+                        {{ anime.name | uppercase }} ({{ anime.watched ? 'Visto' : 'No visto' }})
 						<div class="col-md-9">
 							<span v-if="anime.recomend !== null">Recomendado: {{ anime.recomend ? 'Sí' : 'No' }}</span>
 							<button v-if="anime.watched" @click="toggleRecommend(anime)" class="btn btn-primary">Recomendar</button>
@@ -138,7 +138,7 @@ Vue.component('anime-watchlist', {
 	methods: {
 		loadWatchlist() {
 			const savedAnimes = JSON.parse(localStorage.getItem('savedAnimes')) || [];
-			for (anime of savedAnimes) {
+			for (var anime of savedAnimes) {
 				anime.writingReview = false;
 			}
 			this.watchlist = savedAnimes;
@@ -359,4 +359,4 @@ const App = {
 new Vue({
 	el: '#app',
 	render: h => h(App),
-});
+	});
